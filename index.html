@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>ILOVEYOU</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(135deg, #f8bbd0, #f48fb1);
+      margin: 0;
+      height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .container {
+      background: #fff0f5;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      padding: 60px 80px 100px;
+      max-width: 800px;
+      width: 100%;
+      animation: fadeIn 1s ease-in-out;
+      text-align: center;
+      position: relative;
+    }
+    .centered {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.8);}
+      to {opacity: 1; transform: scale(1);}
+    }
+    h1 {
+      color: #c2185b;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin: 20px 0 30px;
+      color: #6a1b9a;
+    }
+    .btn-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background-color: #d81b60;
+      color: white;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .btn:hover {
+      background-color: #ad1457;
+    }
+    .result {
+      margin-top: 25px;
+      font-size: 18px;
+      color: #4a148c;
+      min-height: 24px;
+    }
+    .hearts, .stars, .fire {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+      top: 0;
+      left: 0;
+    }
+    .hearts span, .stars span {
+      position: absolute;
+      font-size: 30px;
+      animation: float 6s linear infinite;
+      opacity: 0;
+      animation-fill-mode: forwards;
+      user-select: none;
+    }
+    .hearts span.heart {
+      color: #f06292;
+    }
+    .hearts span.rose {
+      color: #d32f2f;
+      font-size: 40px;
+    }
+    .stars span {
+      color: #ffffffaa;
+      font-size: 12px;
+    }
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) scale(1);
+        opacity: 0;
+      }
+      20% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-10vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+    .fire {
+      bottom: 0;
+      height: 150px;
+      background: radial-gradient(ellipse at bottom, #ff80ab, transparent);
+      animation: fireUp 2s infinite ease-in-out alternate;
+    }
+    @keyframes fireUp {
+      from { opacity: 0.6; transform: scaleY(1); }
+      to { opacity: 1; transform: scaleY(1.2); }
+    }
+    .typing {
+      font-size: 18px;
+      margin-top: 40px;
+      color: #880e4f;
+      min-height: 24px;
+    }
+    .hidden {
+      display: none !important;
+    }
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts" id="hearts"></div>
+  <div class="stars" id="stars"></div>
+  <div class="fire"></div>
+  <div class="container" id="container">
+    <h1>ILOVEYOU 💘</h1>
+    <div class="question">Maukah kamu jadi wanitaku selamanya? 😳</div>
+    <div class="btn-container" id="btnContainer">
+      <button class="btn" id="acceptBtn">Terima ❤️</button>
+      <button class="btn" id="rejectBtn">Tolak ❌</button>
+    </div>
+    <div class="result" id="result"></div>
+    <div class="typing" id="typingText"></div>
+  </div>
+  <!-- Musik romantis menggunakan file lokal 12.mp3 -->
+  <audio id="romanticMusic" autoplay loop>
+    <source src="12.mp3" type="audio/mpeg" />
+    Browser kamu tidak mendukung elemen audio.
+  </audio>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const rejectBtn = document.getElementById("rejectBtn");
+      const acceptBtn = document.getElementById("acceptBtn");
+      const result = document.getElementById("result");
+      const hearts = document.getElementById("hearts");
+      const stars = document.getElementById("stars");
+      const typingText = document.getElementById("typingText");
+      const container = document.getElementById("container");
+
+      let accepted = false;
+
+      function typeEffect(text, i = 0) {
+        if (i < text.length) {
+          typingText.innerHTML += text.charAt(i);
+          setTimeout(() => typeEffect(text, i + 1), 60);
+        }
+      }
+
+      function showStars() {
+        for (let i = 0; i < 50; i++) {
+          let star = document.createElement("span");
+          star.innerHTML = "★";
+          star.style.left = Math.random() * 100 + "vw";
+          star.style.top = Math.random() * 100 + "vh";
+          star.style.animationDuration = (Math.random() * 3 + 2) + "s";
+          stars.appendChild(star);
+          setTimeout(() => star.remove(), 7000);
+        }
+      }
+
+      function accept() {
+        if (!accepted) {
+          accepted = true;
+          result.innerText = "Yayyy! Kamu sekarang resmi jadi wanitaku! 💍💑";
+          acceptBtn.textContent = "Kirimkan 💌";
+
+          container.classList.add("centered");
+          rejectBtn.classList.add("hidden");
+
+          for (let i = 0; i < 40; i++) {
+            let elem = document.createElement("span");
+            elem.innerHTML = (i % 5 === 0) ? "🌹" : "💖";
+            elem.className = (i % 5 === 0) ? "rose" : "heart";
+            elem.style.left = Math.random() * 100 + "vw";
+            elem.style.animationDuration = (Math.random() * 3 + 3) + "s";
+            elem.style.animationDelay = (Math.random() * 2) + "s";
+            hearts.appendChild(elem);
+            setTimeout(() => elem.remove(), 9000);
+          }
+
+          setTimeout(() => {
+            typeEffect("Kamu adalah satu-satunya alasan kenapa aku tersenyum setiap hari... 🥺❤️");
+          }, 1000);
+
+          showStars();
+
+        } else {
+          const nomor = ""; // Masukkan nomor WhatsApp kamu di sini
+          const pesan = encodeURIComponent("aku juga mencintaimu 🥰🥰🥰🥳");
+          const url = `https://wa.me/${nomor}?text=${pesan}`;
+          window.location.href = url;
+        }
+      }
+
+      function moveRejectButton() {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const btnRect = rejectBtn.getBoundingClientRect();
+        const padding = 10;
+        const randomX = Math.random() * (viewportWidth - btnRect.width - padding);
+        const randomY = Math.random() * (viewportHeight - btnRect.height - padding);
+        rejectBtn.style.position = "fixed";
+        rejectBtn.style.left = randomX + "px";
+        rejectBtn.style.top = randomY + "px";
+        rejectBtn.style.transform = "none";
+      }
+
+      rejectBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        moveRejectButton();
+      });
+
+      acceptBtn.addEventListener("click", accept);
+    });
+  </script>
+</body>
+</html>
